@@ -14,7 +14,6 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Link from 'next/link';
 import actInspectorsStyle from '../src/styleMUI/list'
-import { pdDatePicker } from '../src/lib'
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { bindActionCreators } from 'redux'
 import * as appActions from '../redux/actions/app'

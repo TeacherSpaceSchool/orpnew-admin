@@ -17,7 +17,6 @@ import Link from 'next/link';
 import checklistInspectorsStyle from '../src/styleMUI/list'
 import { bindActionCreators } from 'redux'
 import * as appActions from '../redux/actions/app'
-import { pdDatePicker } from '../src/lib'
 const filters = [{name:'День', value: 'day'}, {name:'Неделя', value: 'week'}, {name:'Месяц', value: 'month'}, {name:'Год', value: 'year'}]
 
 const ChecklistInspectors = React.memo((props) => {
