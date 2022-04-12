@@ -23,7 +23,7 @@ const App = React.memo(props => {
     const { setIsMobileApp } = props.appActions;
     const { profile, authenticated } = props.user;
     const { load, showAppBar } = props.app;
-    let { checkPagination, sorts, filters, pageName, dateShow, searchShow, regionShow, pointShow } = props;
+    let { checkPagination, sorts, filters, pageName, dateShow, searchShow, regionShow, pointShow, realizatorShow, inspectorShow } = props;
     const [reloadPage, setReloadPage] = useState(false);
     const { showSnackBar } = props.snackbarActions;
     useEffect( ()=>{
@@ -75,9 +75,15 @@ const App = React.memo(props => {
                         ||
                         url.includes('otchetrealizatora')&&sessionStorage.scrollPostionName.includes('otchetrealizatora')
                         ||
+                        url.includes('actinspector')&&sessionStorage.scrollPostionName.includes('actinspector')
+                        ||
+                        url.includes('checklistinspector')&&sessionStorage.scrollPostionName.includes('checklistinspector')
+                        ||
                         url.includes('plan')&&sessionStorage.scrollPostionName.includes('plan')
                         ||
                         url.includes('realizator')&&sessionStorage.scrollPostionName.includes('realizator')
+                        ||
+                        url.includes('inspector')&&sessionStorage.scrollPostionName.includes('inspector')
                         ||
                         url.includes('organizator')&&sessionStorage.scrollPostionName.includes('organizator')
                     )) {
@@ -113,6 +119,8 @@ const App = React.memo(props => {
                     <AppBar
                         regionShow={regionShow}
                         pointShow={pointShow}
+                        realizatorShow={realizatorShow}
+                        inspectorShow={inspectorShow}
                         searchShow={searchShow}
                         dateShow={dateShow}
                         pageName={pageName}

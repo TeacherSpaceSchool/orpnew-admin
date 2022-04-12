@@ -32,6 +32,8 @@ export default async (ctx)=>{
             ctx.store.getState().user.profile = {}
             ctx.store.getState().app.region = undefined
             ctx.store.getState().app.point = undefined
+            ctx.store.getState().app.realizator = undefined
+            ctx.store.getState().app.inspector = undefined
         }
     }
     ctx.store.getState().app.search = ''

@@ -10,32 +10,30 @@ import dialogContentStyle from '../../src/styleMUI/dialogContent'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 
-const SetRegion =  React.memo(
+const SetInspector =  React.memo(
     (props) =>{
-        const { classes, regions } = props;
-        const { setRegion, setPoint } = props.appActions;
+        const { classes, inspectors } = props;
+        const { setInspector } = props.appActions;
         const { showMiniDialog } = props.mini_dialogActions;
-        let [regionChange, setRegionChange] = useState(undefined);
+        let [inspectorChange, setInspectorChange] = useState(undefined);
         return (
             <div className={classes.main}>
                 <Autocomplete
-                    options={regions}
-                    value={regionChange}
+                    options={inspectors}
+                    value={inspectorChange}
                     onChange={(event, newValue) => {
-                        setRegionChange(newValue);
+                        setInspectorChange(newValue);
                     }}
                     className={classes.input}
                     getOptionLabel={(option) => option.name}
-                    renderInput={(params) => <TextField {...params} label='Выберите регион' />}
+                    renderInput={(params) => <TextField {...params} label='Выберите инспектора' />}
                 />
                 <br/>
                 <div>
                     <Button variant='contained' color='primary' onClick={async()=>{
-                       if(regionChange) {
-                           await setRegion(regionChange)
-                           await setPoint(undefined)
-                       }
-                       showMiniDialog(false);
+                        if(inspectorChange)
+                            await setInspector(inspectorChange)
+                        showMiniDialog(false);
                     }} className={classes.button}>
                         Сохранить
                     </Button>
@@ -61,8 +59,8 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-SetRegion.propTypes = {
+SetInspector.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(dialogContentStyle)(SetRegion));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(dialogContentStyle)(SetInspector));

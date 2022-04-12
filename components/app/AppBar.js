@@ -21,6 +21,7 @@ import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/SearchRounded';
 import Sort from '@material-ui/icons/SortRounded';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import LocationCityIcon from '@material-ui/icons/LocationCity';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import FilterList from '@material-ui/icons/FilterListRounded';
@@ -32,17 +33,21 @@ import Confirmation from '../dialog/Confirmation'
 import SetDate from '../dialog/SetDate'
 import SetPoint from '../dialog/SetPoint'
 import SetRegion from '../dialog/SetRegion'
+import SetInspector from '../dialog/SetInspector'
+import SetRealizator from '../dialog/SetRealizator'
 import {pdDDMMYY} from '../../src/lib';
 import {getRegions} from '../../src/gql/region'
 import {getPoints} from '../../src/gql/point'
+import {getRealizators} from '../../src/gql/realizator'
+import {getInspectors} from '../../src/gql/inspector'
 
 const MyAppBar = React.memo((props) => {
     //props
     const initialRender = useRef(true);
     const classes = appbarStyle();
-    const { regionShow, pointShow, searchShow, dateShow, pageName, sorts, filters } = props
-    const { drawer, search, filter, sort, isMobileApp, date, region, point } = props.app;
-    const { showDrawer, setSearch, setFilter, setSort, setDate, setPoint, setRegion } = props.appActions;
+    const { regionShow, pointShow, realizatorShow, inspectorShow, searchShow, dateShow, pageName, sorts, filters } = props
+    const { drawer, search, filter, sort, isMobileApp, date, region, point, realizator, inspector } = props.app;
+    const { showDrawer, setSearch, setFilter, setSort, setDate, setPoint, setRegion, setRealizator, setInspector } = props.appActions;
     const { authenticated, profile } = props.user;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { logout } = props.userActions;
@@ -86,6 +91,22 @@ const MyAppBar = React.memo((props) => {
     }
     let handleClosePoints = () => {
         setAnchorElPoints(null);
+    }
+    const [anchorElRealizators, setAnchorElRealizators] = useState(null);
+    const openRealizators = Boolean(anchorElRealizators);
+    let handleMenuRealizators = (event) => {
+        setAnchorElRealizators(event.currentTarget);
+    }
+    let handleCloseRealizators = () => {
+        setAnchorElRealizators(null);
+    }
+    const [anchorElInspectors, setAnchorElInspectors] = useState(null);
+    const openInspectors = Boolean(anchorElInspectors);
+    let handleMenuInspectors = (event) => {
+        setAnchorElInspectors(event.currentTarget);
+    }
+    let handleCloseInspectors = () => {
+        setAnchorElInspectors(null);
     }
     const [anchorElRegions, setAnchorElRegions] = useState(null);
     const openRegions = Boolean(anchorElRegions);
@@ -147,9 +168,9 @@ const MyAppBar = React.memo((props) => {
                             :
                             <>
                             {
-                                authenticated&&(regionShow||pointShow||dateShow||searchShow||filters||sorts)?
+                                authenticated&&(regionShow||pointShow||inspectorShow||realizatorShow||dateShow||searchShow||filters||sorts)?
                                     <IconButton
-                                        style={{background: date||filter||region&&regionShow||point&&pointShow?'rgba(51, 143, 255, 0.29)':'transparent'}}
+                                        style={{background: date||filter||region&&regionShow||point&&pointShow||inspector&&inspectorShow||realizator&&realizatorShow?'rgba(51, 143, 255, 0.29)':'transparent'}}
                                         aria-owns={openMobileMenu ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
                                         onClick={handleMobileMenu}
@@ -276,7 +297,7 @@ const MyAppBar = React.memo((props) => {
                                     ]
                                     :null
                                 }
-                                {regionShow&&['организатор', 'admin'].includes(profile.role)?
+                                {regionShow&&['главинспектор', 'инспектор', 'организатор', 'admin'].includes(profile.role)?
                                     [
                                         <MenuItem key='regionsMenu' style={{background: region?'rgba(51, 143, 255, 0.29)':'transparent'}} onClick={handleMenuRegions}>
                                             <div style={{display: 'flex'}}>
@@ -308,7 +329,7 @@ const MyAppBar = React.memo((props) => {
                                     ]
                                     :null
                                 }
-                                {region&&pointShow&&['организатор', 'admin'].includes(profile.role)?
+                                {region&&pointShow&&['главинспектор', 'инспектор', 'организатор', 'admin'].includes(profile.role)?
                                     [
                                         <MenuItem key='pointsMenu' style={{background: point?'rgba(51, 143, 255, 0.29)':'transparent'}} onClick={handleMenuPoints}>
                                             <div style={{display: 'flex'}}>
@@ -334,6 +355,70 @@ const MyAppBar = React.memo((props) => {
                                                 По точке
                                             </MenuItem>
                                             <MenuItem key='allPoint' style={{background: !point?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setPoint(undefined);handleClosePoints();handleCloseMobileMenu();}}>
+                                                Все
+                                            </MenuItem>
+                                        </Menu>
+                                    ]
+                                    :null
+                                }
+                                {realizatorShow&&['главинспектор', 'инспектор', 'admin'].includes(profile.role)?
+                                    [
+                                        <MenuItem key='realizatorsMenu' style={{background: realizator?'rgba(51, 143, 255, 0.29)':'transparent'}} onClick={handleMenuRealizators}>
+                                            <div style={{display: 'flex'}}>
+                                                <PermIdentityIcon/>&nbsp;{realizator?realizator.name:'Реализатор'}
+                                            </div>
+                                        </MenuItem>,
+                                        <Menu
+                                            key='realizators'
+                                            id='menu-appbar'
+                                            anchorEl={anchorElRealizators}
+                                            anchorOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            open={openRealizators}
+                                            onClose={handleCloseRealizators}
+                                        >
+                                            <MenuItem key='onRealizators' style={{background: realizator?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{const realizators = await getRealizators({...region?{region: region._id}:{}, ...point?{point: point._id}:{}});setMiniDialog('Реализаторы', <SetRealizator realizators={realizators}/>);showMiniDialog(true);handleCloseRealizators();handleCloseMobileMenu();}}>
+                                                По реализатору
+                                            </MenuItem>
+                                            <MenuItem key='allRealizator' style={{background: !realizator?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setRealizator(undefined);handleCloseRealizators();handleCloseMobileMenu();}}>
+                                                Все
+                                            </MenuItem>
+                                        </Menu>
+                                    ]
+                                    :null
+                                }
+                                {inspectorShow&&['главинспектор', 'admin'].includes(profile.role)?
+                                    [
+                                        <MenuItem key='inspectorsMenu' style={{background: inspector?'rgba(51, 143, 255, 0.29)':'transparent'}} onClick={handleMenuInspectors}>
+                                            <div style={{display: 'flex'}}>
+                                                <PermIdentityIcon/>&nbsp;{inspector?inspector.name:'Инспектор'}
+                                            </div>
+                                        </MenuItem>,
+                                        <Menu
+                                            key='inspectors'
+                                            id='menu-appbar'
+                                            anchorEl={anchorElInspectors}
+                                            anchorOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            open={openInspectors}
+                                            onClose={handleCloseInspectors}
+                                        >
+                                            <MenuItem key='onInspectors' style={{background: inspector?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{const inspectors = await getInspectors({});setMiniDialog('Инспекторы', <SetInspector inspectors={inspectors}/>);showMiniDialog(true);handleCloseInspectors();handleCloseMobileMenu();}}>
+                                                По инспектору
+                                            </MenuItem>
+                                            <MenuItem key='allInspector' style={{background: !inspector?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setInspector(undefined);handleCloseInspectors();handleCloseMobileMenu();}}>
                                                 Все
                                             </MenuItem>
                                         </Menu>
@@ -378,7 +463,85 @@ const MyAppBar = React.memo((props) => {
                             </Paper>
                             :
                             <>
-                            {region&&pointShow&&['организатор', 'admin'].includes(profile.role)?
+                            {inspectorShow&&['главинспектор', 'admin'].includes(profile.role)?
+                                <>
+                                <Tooltip title='Инспектор'>
+                                    <IconButton
+                                        style={{background: inspector?'rgba(51, 143, 255, 0.29)':'transparent'}}
+                                        aria-owns={openInspectors ? 'menu-appbar' : undefined}
+                                        aria-haspopup='true'
+                                        onClick={handleMenuInspectors}
+                                        color='inherit'
+                                    >
+                                        <PermIdentityIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    key='Inspectors'
+                                    id='menu-appbar'
+                                    anchorEl={anchorElInspectors}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={openInspectors}
+                                    onClose={handleCloseInspectors}
+                                >
+                                    <MenuItem style={{background: inspector?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{const inspectors = await getInspectors({});setMiniDialog('Инспекторы', <SetInspector inspectors={inspectors}/>);showMiniDialog(true);handleCloseInspectors();}}>
+                                        {inspector?inspector.name:'По инспектору'}
+                                    </MenuItem>
+                                    <MenuItem style={{background: !inspector?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setInspector(undefined);handleCloseInspectors();}}>
+                                        Все
+                                    </MenuItem>
+                                </Menu>
+                                &nbsp;
+                                </>
+                                :null
+                            }
+                            {realizatorShow&&['главинспектор', 'инспектор', 'admin'].includes(profile.role)?
+                                <>
+                                <Tooltip title='Реализатор'>
+                                    <IconButton
+                                        style={{background: realizator?'rgba(51, 143, 255, 0.29)':'transparent'}}
+                                        aria-owns={openRealizators ? 'menu-appbar' : undefined}
+                                        aria-haspopup='true'
+                                        onClick={handleMenuRealizators}
+                                        color='inherit'
+                                    >
+                                        <PermIdentityIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    key='Realizators'
+                                    id='menu-appbar'
+                                    anchorEl={anchorElRealizators}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={openRealizators}
+                                    onClose={handleCloseRealizators}
+                                >
+                                    <MenuItem style={{background: realizator?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{const realizators = await getRealizators({...region?{region: region._id}:{}, ...point?{point: point._id}:{}});setMiniDialog('Реализаторы', <SetRealizator realizators={realizators}/>);showMiniDialog(true);handleCloseRealizators();}}>
+                                        {realizator?realizator.name:'По реализатору'}
+                                    </MenuItem>
+                                    <MenuItem style={{background: !realizator?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setRealizator(undefined);handleCloseRealizators();}}>
+                                        Все
+                                    </MenuItem>
+                                </Menu>
+                                &nbsp;
+                                </>
+                                :null
+                            }
+                            {region&&pointShow&&['главинспектор', 'инспектор', 'организатор', 'admin'].includes(profile.role)?
                                 <>
                                 <Tooltip title='Точка'>
                                     <IconButton
@@ -417,7 +580,7 @@ const MyAppBar = React.memo((props) => {
                                 </>
                                 :null
                             }
-                            {regionShow&&['организатор', 'admin'].includes(profile.role)?
+                            {regionShow&&['главинспектор', 'инспектор', 'организатор', 'admin'].includes(profile.role)?
                                 <>
                                 <Tooltip title='Регион'>
                                     <IconButton

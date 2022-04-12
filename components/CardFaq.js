@@ -44,7 +44,7 @@ const CardFaq = React.memo((props) => {
     let handleName =  (event) => {
         setName(event.target.value)
     };
-    let _roles = ['организатор', 'реализатор']
+    let _roles = ['организатор', 'реализатор', 'инспектор', 'главинспектор']
     let [roles, setRoles] = useState(element&&element.typex?element.typex:[]);
     let handleRoles =  (event) => {
         setRoles(event.target.value)

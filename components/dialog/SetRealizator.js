@@ -9,33 +9,28 @@ import Button from '@material-ui/core/Button';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import AutocomplectOnline from '../app/AutocomplectOnline'
 
-const SetRegion =  React.memo(
+const SetRealizator =  React.memo(
     (props) =>{
-        const { classes, regions } = props;
-        const { setRegion, setPoint } = props.appActions;
+        const { classes, realizators } = props;
+        const { setRealizator } = props.appActions;
         const { showMiniDialog } = props.mini_dialogActions;
-        let [regionChange, setRegionChange] = useState(undefined);
+        let [realizatorChange, setRealizatorChange] = useState(undefined)
         return (
             <div className={classes.main}>
-                <Autocomplete
-                    options={regions}
-                    value={regionChange}
-                    onChange={(event, newValue) => {
-                        setRegionChange(newValue);
-                    }}
-                    className={classes.input}
-                    getOptionLabel={(option) => option.name}
-                    renderInput={(params) => <TextField {...params} label='Выберите регион' />}
-                />
+                <AutocomplectOnline setElement={setRealizatorChange} getElements={async (search)=>{
+                    let _realizators = []
+                    if(search.length>2)
+                        _realizators = realizators.filter(element=>{return element.name.toLowerCase().includes(search)})
+                    return _realizators
+                }} label={'реализатора'} minLength={0}/>
                 <br/>
                 <div>
                     <Button variant='contained' color='primary' onClick={async()=>{
-                       if(regionChange) {
-                           await setRegion(regionChange)
-                           await setPoint(undefined)
-                       }
-                       showMiniDialog(false);
+                        if(realizatorChange)
+                            await setRealizator(realizatorChange)
+                        showMiniDialog(false);
                     }} className={classes.button}>
                         Сохранить
                     </Button>
@@ -61,8 +56,8 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-SetRegion.propTypes = {
+SetRealizator.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(dialogContentStyle)(SetRegion));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(dialogContentStyle)(SetRealizator));

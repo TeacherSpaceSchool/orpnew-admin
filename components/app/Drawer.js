@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import StorageIcon from '@material-ui/icons/Storage';
 import ArtTrackIcon from '@material-ui/icons/ArtTrack';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
@@ -31,16 +32,19 @@ const MyDrawer = React.memo((props) => {
     const open = isMobileApp?drawer:true;
     const router = useRouter();
     let [uncover, setUncover] = useState(
-        (router.pathname.includes('region')||router.pathname.includes('point')||router.pathname.includes('realizator')&&!router.pathname.includes('otchetrealizatora')||router.pathname.includes('organizator')&&!router.pathname.includes('otchetorganizatora')||router.pathname.includes('price')||router.pathname.includes('specialprice')||router.pathname.includes('tara'))?
+        (router.pathname.includes('region')||router.pathname.includes('point')||router.pathname.includes('inspector')&&!router.pathname.includes('checklistinspector')&&!router.pathname.includes('actinspector')||router.pathname.includes('realizator')&&!router.pathname.includes('otchetrealizatora')||router.pathname.includes('organizator')&&!router.pathname.includes('otchetorganizatora')||router.pathname.includes('price')||router.pathname.includes('specialprice')||router.pathname.includes('tara'))?
             'Данные'
             :
             router.pathname.includes('otchetrealizatora')||router.pathname.includes('otchetorganizatora')||router.pathname.includes('nakladnayasklad2')||router.pathname.includes('nakladnayasklad1')||router.pathname.includes('nakladnayanavecherniyvozvrat')||router.pathname.includes('nakladnayanapustuytaru')?
                 'Накладные'
                 :
-                router.pathname.includes('plan')||router.pathname.includes('error')||router.pathname.includes('statistic')||router.pathname.includes('reiting')||router.pathname.includes('geo')?
-                    'Статистика'
+                router.pathname.includes('actinspector')||router.pathname.includes('checklistinspector')?
+                    'Инспекция'
                     :
-                    ''
+                    router.pathname.includes('plan')||router.pathname.includes('error')||router.pathname.includes('statistic')||router.pathname.includes('reiting')||router.pathname.includes('geo')?
+                        'Статистика'
+                        :
+                        ''
     );
     const handleUncover = (item)=>{
         if(uncover===item)item = ''
@@ -69,9 +73,9 @@ const MyDrawer = React.memo((props) => {
                     <List>
                         <Divider />
                         {
-                            ['admin', 'организатор'].includes(profile.role)?
+                            ['admin', 'организатор', 'главинспектор'].includes(profile.role)?
                                 <>
-                                <ListItem style={{background: router.pathname.includes('region')||router.pathname.includes('point')||router.pathname.includes('realizator')&&!router.pathname.includes('otchetrealizatora')||router.pathname.includes('organizator')&&!router.pathname.includes('otchetorganizatora')||router.pathname.includes('price')||router.pathname.includes('specialprice')||router.pathname.includes('tara')?'#f5f5f5':'#ffffff'}} button onClick={()=>{handleUncover('Данные');}}>
+                                <ListItem style={{background: router.pathname.includes('region')||router.pathname.includes('point')||router.pathname.includes('realizator')&&!router.pathname.includes('otchetrealizatora')||router.pathname.includes('inspector')&&!router.pathname.includes('checklistinspector')&&!router.pathname.includes('actinspector')||router.pathname.includes('organizator')&&!router.pathname.includes('otchetorganizatora')||router.pathname.includes('price')||router.pathname.includes('specialprice')||router.pathname.includes('tara')?'#f5f5f5':'#ffffff'}} button onClick={()=>{handleUncover('Данные');}}>
                                     <ListItemIcon><StorageIcon color='inherit'/></ListItemIcon>
                                     <ListItemText primary='Данные' />
                                     <ListItemIcon>{uncover==='Данные'?<UnfoldMoreIcon color='inherit'/>:<UnfoldLessIcon color='inherit'/>}</ListItemIcon>
@@ -128,6 +132,19 @@ const MyDrawer = React.memo((props) => {
                                         <Link href={'/realizators'}>
                                             <ListItem style={{marginLeft: 16, background: router.pathname.includes('realizator')&&!router.pathname.includes('otchetrealizator')?'#f5f5f5':'#ffffff'}} button onClick={()=>{showDrawer(false)}}>
                                                 <ListItemText primary='Реализаторы' />
+                                            </ListItem>
+                                        </Link>
+                                        <Divider/>
+                                        </>
+                                        :
+                                        null
+                                }
+                                {
+                                    ['admin', 'главинспектор'].includes(profile.role)?
+                                        <>
+                                        <Link href={'/inspectors'}>
+                                            <ListItem style={{marginLeft: 16, background: router.pathname.includes('inspector')&&!router.pathname.includes('checklistinspector')&&!router.pathname.includes('actinspector')?'#f5f5f5':'#ffffff'}} button onClick={()=>{showDrawer(false)}}>
+                                                <ListItemText primary='Инспекторы' />
                                             </ListItem>
                                         </Link>
                                         <Divider/>
@@ -259,6 +276,35 @@ const MyDrawer = React.memo((props) => {
                                 <Link href={`/otchetrealizatora${profile.role==='реализатор'?'/[id]':'s'}`} as={`/otchetrealizatora${profile.role==='реализатор'?'/new':'s'}`}>
                                     <ListItem style={{marginLeft: 16, background: router.pathname.includes('otchetrealizatora')?'#f5f5f5':'#ffffff'}} button onClick={()=>{showDrawer(false)}}>
                                         <ListItemText primary={`Отчет${profile.role==='реализатор'?'':'ы'} реализатора`} />
+                                    </ListItem>
+                                </Link>
+                                <Divider/>
+                            </List>
+                        </Collapse>
+                        {
+                            ['admin', 'главинспектор', 'инспектор'].includes(profile.role)?
+                                <>
+                                <ListItem style={{background: router.pathname.includes('actinspector')||router.pathname.includes('checklistinspector')?'#f5f5f5':'#ffffff'}} button onClick={()=>{handleUncover('Инспекция');}}>
+                                    <ListItemIcon><AssignmentTurnedInIcon color='inherit'/></ListItemIcon>
+                                    <ListItemText primary='Инспекция' />
+                                    <ListItemIcon>{uncover==='Инспекция'?<UnfoldMoreIcon color='inherit'/>:<UnfoldLessIcon color='inherit'/>}</ListItemIcon>
+                                </ListItem>
+                                <Divider/>
+                                </>
+                                :
+                                null
+                        }
+                        <Collapse in={uncover==='Инспекция'} timeout='auto' unmountOnExit>
+                            <List component='div' disablePadding>
+                                <Link href={'/checklistinspectors'}>
+                                    <ListItem style={{marginLeft: 16, background: router.pathname.includes('checklistinspector')?'#f5f5f5':'#ffffff'}} button onClick={()=>{showDrawer(false)}}>
+                                        <ListItemText primary='Чек-лист инспектора' />
+                                    </ListItem>
+                                </Link>
+                                <Divider/>
+                                <Link href={'/actinspectors'}>
+                                    <ListItem style={{marginLeft: 16, background: router.pathname.includes('actinspector')?'#f5f5f5':'#ffffff'}} button onClick={()=>{showDrawer(false)}}>
+                                        <ListItemText primary='АКТ инспектора' />
                                     </ListItem>
                                 </Link>
                                 <Divider/>

@@ -28,7 +28,7 @@ const Statistic = React.memo((props) => {
     const initialRender = useRef(true);
     let [dateStart, setDateStart] = useState(data.dateStart);
     let [dateType, setDateType] = useState({name:'День', value: 'day'});
-    const dateTypes = [{name:'Часы', value: 'time'}, {name:'День', value: 'day'}, {name:'Месяц', value: 'month'}, {name:'Год', value: 'year'}]
+    const dateTypes = [{name:'День', value: 'day'}, {name:'Неделя', value: 'week'}, {name:'Месяц', value: 'month'}, {name:'Год', value: 'year'}]
     let handleDateType =  (event) => {
         setDateType({value: event.target.value, name: event.target.name})
     };

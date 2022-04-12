@@ -10,34 +10,44 @@ import Info from '@material-ui/icons/Info';
 
 const AutocomplectOnline = React.memo((props) => {
     const classes = cardStyle();
-    const {setElement, getElements, label, defaultValue, autoRef, dialogAddElement, size, variant, redirect} = props;
+    const {setElement, getElements, label, defaultValue, autoRef, dialogAddElement, size, variant, redirect, minLength, error, disabled} = props;
     const focus = useRef(false);
     const [inputValue, setInputValue] = React.useState(defaultValue?defaultValue.name?defaultValue.name:defaultValue.number?defaultValue.number:'':'');
     const { showMiniDialog, setMiniDialog } = props.mini_dialogActions;
-    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    let searchTimeOut = useRef(null);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         (async()=>{
-            if (!focus.current||inputValue.length<3) {
-                setElements([]);
-                if(open)
-                    setOpen(false)
-                if(loading)
-                    setLoading(false)
+            if(minLength===0){
+                if (!loading)
+                    setLoading(true)
+                elements = await getElements(inputValue)
+                if(elements.length<300)
+                    setElements(elements)
+                setLoading(false)
             }
             else {
-                if(!loading)
-                    setLoading(true)
-                if(searchTimeOut)
-                    clearTimeout(searchTimeOut)
-                searchTimeOut = setTimeout(async()=>{
-                    setElements(await getElements(inputValue))
-                    if(!open)
-                        setOpen(true)
-                    setLoading(false)
-                }, 500)
-                setSearchTimeOut(searchTimeOut)
+                if (!focus.current||inputValue.length<(minLength?minLength:3)) {
+                    setElements([]);
+                    if (open)
+                        setOpen(false)
+                    if (loading)
+                        setLoading(false)
+                }
+                else {
+                    if (!loading)
+                        setLoading(true)
+                    if (searchTimeOut.current)
+                        clearTimeout(searchTimeOut.current)
+                    searchTimeOut.current = setTimeout(async () => {
+                        setElements(await getElements(inputValue))
+                        if (!open)
+                            setOpen(true)
+                        setLoading(false)
+                    }, 500)
+
+                }
             }
         })()
     }, [inputValue]);
@@ -49,16 +59,16 @@ const AutocomplectOnline = React.memo((props) => {
 
     return (
         <Autocomplete
+            disabled={disabled}
             ref={autoRef}
             defaultValue={defaultValue}
             onClose={()=>setOpen(false)}
             open={open}
             size={size?size:'medium'}
             inputValue={inputValue}
-            disableOpenOnFocus
             className={classes.input}
             options={elements}
-            getOptionLabel={option => option.name?option.name:option.number}
+            getOptionLabel={option => `${option.name?option.name:option.number}${option.rnmNumber?`/${option.rnmNumber}`:''}`}
             onChange={(event, newValue) => {
                 focus.current = false
                 if(dialogAddElement&&typeof newValue === 'string') {
@@ -96,8 +106,12 @@ const AutocomplectOnline = React.memo((props) => {
                             :
                             null
                     }
-                    <TextField {...params} label={`Выбрать ${label}`} fullWidth  variant={variant?variant:'standard'/*'outlined'*/}
+                    <TextField {...params} label={`Выбрать ${label}`} fullWidth error={error} variant={variant?variant:'standard'/*'outlined'*/}
                                onChange={handleChange}
+                               onClick={()=>{
+                                   if(minLength===0&&!open)
+                                       setOpen(true)
+                               }}
                                InputProps={{
                                    ...params.InputProps,
                                    endAdornment: (

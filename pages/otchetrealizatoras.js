@@ -59,7 +59,7 @@ const OtchetRealizatoras = React.memo((props) => {
             ]
         }
         setRows([...rows]);
-        setCount(await getOtchetRealizatorasCount({...date?{date}:{}, ...region?{region: region._id}:{}}));
+        setCount(await getOtchetRealizatorasCount({...date?{date}:{}, ...region?{region: region._id}:{}, ...point?{point: point._id}:{}}));
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
         setPaginationWork(true)

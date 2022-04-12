@@ -1,4 +1,4 @@
-import { SET_POINT, SET_REGION, SHOW_APPBAR, SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_DATE} from '../constants/app'
+import { SET_POINT, SET_INSPECTOR, SET_REGION, SET_REALIZATOR, SHOW_APPBAR, SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_DATE} from '../constants/app'
 
 const initialState = {
     showAppBar: true,
@@ -9,12 +9,18 @@ const initialState = {
     isMobileApp: undefined,
     load: false,
     date: '',
+    realizator: undefined,
     region: undefined,
     point: undefined,
+    inspector: undefined,
 }
 
 export default function mini_dialog(state = initialState, action) {
     switch (action.type) {
+        case SET_INSPECTOR:
+            return {...state, inspector: action.payload}
+        case SET_REALIZATOR:
+            return {...state, realizator: action.payload}
         case SHOW_APPBAR:
             return {...state, showAppBar: action.payload}
         case SHOW_DRAWER:

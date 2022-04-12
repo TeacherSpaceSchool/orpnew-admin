@@ -1,8 +1,22 @@
-import { SHOW_APPBAR, SHOW_DRAWER, SET_SEARCH, SET_FILTER, SET_SORT, SET_IS_MOBILE_APP, SHOW_LOAD, SET_REGION, SET_DATE, SET_POINT } from '../constants/app'
+import { SET_INSPECTOR, SHOW_APPBAR, SHOW_DRAWER, SET_SEARCH, SET_FILTER, SET_SORT, SET_IS_MOBILE_APP, SHOW_LOAD, SET_REALIZATOR, SET_REGION, SET_DATE, SET_POINT } from '../constants/app'
+
+export function setInspector(data) {
+    return {
+        type: SET_INSPECTOR,
+        payload: data
+    }
+}
 
 export function setPoint(data) {
     return {
         type: SET_POINT,
+        payload: data
+    }
+}
+
+export function setRealizator(data) {
+    return {
+        type: SET_REALIZATOR,
         payload: data
     }
 }
